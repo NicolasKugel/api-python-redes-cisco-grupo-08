@@ -1,8 +1,10 @@
 import json
 import requests
-api_url = "http://localhost:58000/api/v1/host"
+from config import BASE_URL, NRO_TICKET
 
-headers={"X-Auth-Token": "NC-144-d131174a867340c3a5a8-nbi"}
+api_url = f"{BASE_URL}/host"
+
+headers = {"X-Auth-Token": NRO_TICKET}
 
 resp = requests.get(api_url, headers=headers, verify=False)
 

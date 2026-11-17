@@ -1,45 +1,68 @@
-# Entorno de virtualización Python
+# TP4 – Redes de Computadoras (3643)
 
-# Pasos de instalación en Linux:
+**Universidad Nacional de La Matanza**  
+**Grupo 08 – Segundo cuatrimestre de 2026**
 
-## 1. Clonación del proyecto
+## Descripción
 
-Desde la terminal ejecutar:
+Este repositorio contiene los scripts de Python utilizados para interactuar con la API REST del Network Controller de Cisco Packet Tracer.
 
-**git clone** <URL_del_repositorio> <nombre_de_la_carpeta_de_destino>
+Se utilizaron los scripts proporcionados por la cátedra y se desarrolló uno adicional para exportar el inventario de la red a un archivo CSV.
 
-Luego ejecutar **cd** <nombre_de_la_carpeta_de_destino>. Esta carpeta será la raíz de nuestro proyecto en Python.
+## Scripts
 
-## 2. Creación del entorno virtual
+| Script | Descripción |
+|---|---|
+| `01_get-ticket.py` | Obtiene un ticket de autenticación del Network Controller. |
+| `02_get-network-device.py` | Consulta y muestra los dispositivos de red descubiertos. |
+| `03_get-host.py` | Consulta y muestra los hosts identificados por el controlador. |
+| `04_tabulate.py` | Muestra información de dispositivos y hosts mediante tablas. |
+| `05_exportar_inventario.py` | Consulta dispositivos y hosts, procesa sus atributos y exporta la información a `inventario.csv`. |
 
-Supongamos que el nombre que le damos al entorno virtual es **cisco**, entonces se creará una carpeta **cisco** con todas las librerías y dependencias necesarias paea nuestro proyecto. 
+Los scripts 02 y 04 fueron adaptados para contemplar registros de la API que no incluyen el campo `hostname`.
 
-La manera de realizarlo es la siguiente:
+## Requisitos
 
-# python3 -m venv <nombre_del_entorno>
-Ejemplo: python3 -m venv cisco
+- Python 3
+- Cisco Packet Tracer con Network Controller configurado
+- Acceso externo a la API habilitado
+- Bibliotecas incluidas en `requirements.txt`
 
-Para activar el entorno escribimos **source cisco/bin/activate**, en la carpeta raíz del proyecto. El nombre del entorno virtual aparecerá entre paréntesis ().
+## Instalación
 
-## 3. Instalación de las dependencias, en este caso las librerías requests y tabulate
+Crear un entorno virtual desde la raíz del proyecto:
 
-En la carpeta raíz de nuestro proyecto y dentro del entorno virtual escribimos: **pip install -r requirements.txt**
+```powershell
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+```
 
-## 4. Selección del intérprete Python para nuestro entorno virtual
+## Configuración
 
-<img width="881" height="118" alt="image" src="https://github.com/user-attachments/assets/18c41d8e-d338-48b6-953c-b2499c57319f" />
+La API REST del controlador debe estar disponible en:
 
-<img width="736" height="412" alt="image" src="https://github.com/user-attachments/assets/2a795fcd-2cf8-47ef-a5a6-d21e09ce967f" />
+`http://localhost:58000/api/v1`
 
-Tal como se ve en la figura seleccionamos Python 3.10.12 (cisco) que se mostrará como entorno recomendado.
+Configurar las credenciales del Network Controller mediante las variables de entorno `NC_USERNAME` y `NC_PASSWORD`. Los scripts que necesiten un ticket existente pueden utilizar `NRO_TICKET`. Configurar el valor de las variables en `.env.example` (luego de puede crear un copia de este que se llame .env y listo)
 
-## 5. Desactivación del entorno virtual
+No se incluyen contraseñas ni tickets de autenticación en el repositorio.
 
-Simplemente escribimos en la línea de comandos: **deactivate**
+## Ejecución del script propio
 
+Desde PowerShell:
 
+```powershell
+python .\src\05_exportar_inventario.py
+```
 
-## Antes de ejecutar los scripts
+El programa obtiene un ticket de autenticación, consulta los endpoints `/network-device` y `/host`, y genera `inventario.csv`.
 
-- **Credenciales del controlador:** los scripts usan el usuario `cisco` y la clave `cisco123!`. Si en tu Network Controller creaste otro usuario, cambialos en `01_get-ticket.py` y en `04_tabulate.py`.
-- **Ticket (X-Auth-Token):** `02_get-network-device.py` y `03_get-host.py` traen escrito un ticket de ejemplo que **no va a funcionar** en tu Packet Tracer, porque el controlador genera uno nuevo en cada sesión y vence. Ejecutá primero `01_get-ticket.py`, copiá el ticket que muestra y reemplazalo en el header `X-Auth-Token` de esos dos scripts. `04_tabulate.py` no necesita este paso: pide el ticket solo.
+El archivo contiene las columnas:
+
+- Tipo
+- Nombre
+- Dirección IP
+- Modelo
+
+Durante la validación del TP4 se exportaron correctamente **17 registros**.

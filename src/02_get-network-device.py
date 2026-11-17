@@ -1,8 +1,9 @@
 import json
 import requests
-api_url = "http://localhost:58000/api/v1/network-device"
+from config import BASE_URL, NRO_TICKET
+api_url = f"{BASE_URL}/network-device"
 
-headers={"X-Auth-Token": "NC-144-d131174a867340c3a5a8-nbi"}
+headers = {"X-Auth-Token": NRO_TICKET}
 
 resp = requests.get(api_url, headers=headers)
 
@@ -17,4 +18,5 @@ print()
 networkDevices = response_json["response"]
 
 for networkDevice in networkDevices:
-    print(networkDevice["hostname"], "\t", networkDevice["platformId"], "\t", networkDevice["managementIpAddress"])
+    if networkDevice.get('hostname', None):
+        print(networkDevice["hostname"], "\t", networkDevice["platformId"], "\t", networkDevice["managementIpAddress"])
